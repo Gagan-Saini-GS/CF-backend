@@ -313,7 +313,7 @@ app.post("/set-product-review", (req, res) => {
       });
 
       product.save();
-      res.json("OK");
+      res.json(product.reviews);
     });
   });
 });
@@ -345,7 +345,7 @@ app.post("/ask-product-question", (req, res) => {
       });
 
       product.save();
-      res.json("OK");
+      res.json(product.questions);
     });
   });
 });
@@ -482,13 +482,14 @@ app.post("/access-cart-items", (req, res) => {
 app.post("/remove-item", (req, res) => {
   const productID = req.body.productID;
   const authToken = req.body.authToken;
+  var products = [];
 
   jwt.verify(authToken, process.env.AUTH_TOKEN, (err, user) => {
     if (err) {
       console.log(err);
     }
 
-    User.findOne({ userEmail: user.useremail }, (err, foundUser) => {
+    User.findOne({ userEmail: user.useremail }, async (err, foundUser) => {
       if (err) {
         console.log(err);
       }
@@ -505,8 +506,24 @@ app.post("/remove-item", (req, res) => {
       foundUser.cart = temp;
       foundUser.save();
 
-      const status = "OK Item removed";
-      res.json({ status });
+      const x = foundUser.cart;
+
+      for (let i = 0; i < x.length; i++) {
+        let productFind = new Promise((resolve, reject) => {
+          Product.findOne({ _id: x[i] }, (err, product) => {
+            if (err) {
+              console.log(err);
+              reject("Error occured so promise rejected");
+            }
+            resolve(product);
+          });
+        });
+
+        const product = await productFind;
+        products.push(product);
+      }
+
+      res.json(products);
     });
   });
 });
