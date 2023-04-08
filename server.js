@@ -289,8 +289,8 @@ app.post("/get-product-with-id", (req, res) => {
 });
 
 app.post("/set-product-review", (req, res) => {
-  // console.log(req.body);
   const reviewContent = req.body.reviewContent;
+  const starCount = req.body.starCount;
   const token = req.body.authToken;
   const productID = req.body.productID;
 
@@ -309,6 +309,7 @@ app.post("/set-product-review", (req, res) => {
       const arr = product.reviews;
       arr.push({
         reviewContent: reviewContent,
+        starCount: starCount,
         username: user.username,
       });
 
