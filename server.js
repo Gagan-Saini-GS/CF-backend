@@ -380,10 +380,6 @@ app.post("/filtered-products", (req, res) => {
     }
   }
 
-  // console.log("filter " + filter);
-  // console.log("finalFilter " + finalFilter);
-  // console.log("item " + item);
-
   if (item === "company") {
     Product.find({ company: finalFilter }, (err, products) => {
       if (err) {
@@ -564,6 +560,43 @@ app.post("/buy-product", (req, res) => {
         res.json({ x, y });
       });
     });
+  });
+});
+
+app.post("/search-product", (req, res) => {
+  const searchQuery = req.body.searchQuery.toLowerCase();
+  let finalProducts = [];
+
+  Product.find({}, (err, products) => {
+    if (err) {
+      console.log(err);
+    }
+
+    // Find those products whose product Name or description or Company
+    // Name matches to your search query.
+
+    for (let i = 0; i < products.length; i++) {
+      const productName = products[i].name;
+      const companyName = products[i].company;
+      const description = products[i].description;
+
+      let index = productName.search(searchQuery);
+      if (index !== -1) {
+        finalProducts.push(products[i]);
+      } else {
+        index = companyName.search(searchQuery);
+        if (index !== -1) {
+          finalProducts.push(products[i]);
+        } else {
+          index = description.search(searchQuery);
+          if (index !== -1) {
+            finalProducts.push(products[i]);
+          }
+        }
+      }
+    }
+
+    res.json(finalProducts);
   });
 });
 
