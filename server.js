@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
   website: String,
   cart: [],
   orders: [],
+  recentsProducts: [],
 });
 
 const sellerSchema = new mongoose.Schema({
@@ -69,6 +70,9 @@ const categories = [
   "hoodies",
   "others",
 ];
+
+// Utility Functions
+// (Should be in different files but I started this thing very late for this project)
 
 app.post("/signup", (req, res) => {
   bcrypt.hash(req.body.user.password, saltRounds, (err, hash) => {
@@ -167,11 +171,13 @@ app.post("/become-seller", (req, res) => {
 
 app.post("/user-details", (req, res) => {
   const authToken = req.body.authToken;
+  // console.log(authToken);
   jwt.verify(authToken, process.env.AUTH_TOKEN, function (err, user) {
     if (err) {
       console.log(err);
     } else {
-      User.findOne({ useremail: user.useremail }, (err, foundUser) => {
+      console.log(user);
+      User.findOne({ userEmail: user.useremail }, (err, foundUser) => {
         if (err) {
           console.log(err);
         } else {
@@ -193,7 +199,7 @@ app.post("/update-profile", (req, res) => {
     if (!err) {
       // console.log("Found User");
       // console.log(foundUser);
-      User.findOne({ useremail: foundUser.useremail }, (err, finalUser) => {
+      User.findOne({ userEmail: foundUser.useremail }, (err, finalUser) => {
         if (err) {
           console.log(err);
           ans = "ERROR";
@@ -232,6 +238,10 @@ app.post("/get-all-products", (req, res) => {
 app.post("/upload-product", (req, res) => {
   const temp = req.body.product;
 
+  // I am using authToken to keep which product is uploaded by which seller.
+  // Helps to build admin panel and seller panel.
+  const authToken = req.body.authToken;
+
   const product = new Product({
     name: temp.name,
     price: Number(temp.price),
@@ -242,6 +252,7 @@ app.post("/upload-product", (req, res) => {
     sizes: temp.sizes,
     reviews: [],
     questions: [],
+    seller: authToken,
   });
 
   product.save();
@@ -276,7 +287,25 @@ app.post("/get-products", (req, res) => {
   }
 });
 
-app.post("/get-product-with-id", (req, res) => {
+app.post("/get-product-with-id", async (req, res) => {
+  const authToken = req.body.authToken;
+
+  jwt.verify(authToken, process.env.AUTH_TOKEN, (err, foundUser) => {
+    if (err) {
+      console.log(err);
+    }
+
+    User.findOne({ userEmail: foundUser.useremail }, (err, user) => {
+      if (err) {
+        console.log(err);
+      }
+
+      const x = user;
+      x.recentsProducts.push(req.body.productID);
+      x.save();
+    });
+  });
+
   // console.log(req.body.productID);
   Product.findOne({ _id: req.body.productID }, (err, foundProduct) => {
     if (err) {
@@ -284,6 +313,7 @@ app.post("/get-product-with-id", (req, res) => {
     }
 
     // console.log(foundProduct);
+
     res.json({ foundProduct });
   });
 });
