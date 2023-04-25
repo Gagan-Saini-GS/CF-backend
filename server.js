@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
   cart: [],
   orders: [],
   recentsProducts: [],
+  isSeller: Boolean,
+  PANCardNumber: String,
+  GSTNumber: String,
+  TandC: Boolean,
 });
 
 const sellerSchema = new mongoose.Schema({
@@ -73,6 +77,8 @@ const categories = [
 
 // Utility Functions
 // (Should be in different files but I started this thing very late for this project)
+
+// User Related Routes
 
 app.post("/signup", (req, res) => {
   bcrypt.hash(req.body.user.password, saltRounds, (err, hash) => {
@@ -121,7 +127,7 @@ app.post("/signup", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-  User.findOne({ userEmail: req.body.user.userEmail }, (err, foundUser) => {
+  User.findOne({ userEmail: req.body.user.useremail }, (err, foundUser) => {
     if (err) {
       console.log(err);
     } else {
@@ -132,7 +138,7 @@ app.post("/login", (req, res) => {
           if (!err && result === true) {
             const authToken = jwt.sign(
               {
-                userEmail: req.body.user.userEmail,
+                useremail: req.body.user.useremail,
                 password: foundUser.password,
               },
               process.env.AUTH_TOKEN
@@ -151,18 +157,29 @@ app.post("/become-seller", (req, res) => {
   jwt.verify(authToken, process.env.AUTH_TOKEN, function (err, user) {
     if (err) {
       console.log(err);
+      res.status(403);
     }
 
-    const newSeller = new SellerUser({
-      userName: user.username,
-      userEmail: req.body.sellerEmail,
-      phoneNumber: req.body.sellerPhoneNumber,
-      PANCardNumber: req.body.sellerPANCardNumber,
-      GSTNumber: req.body.sellerGSTNumber,
-      TandC: true,
-    });
+    User.findOne({ userEmail: user.useremail }, (err, finalUser) => {
+      if (err) {
+        console.log(err);
+        res.status(403);
+      }
 
-    newSeller.save();
+      const foundUser = finalUser;
+      foundUser.isSeller = true;
+      // foundUser.userEmail = req.body.sellerEmail;
+      // foundUser.phoneNumber = req.body.sellerPhoneNumber;
+      foundUser.PANCardNumber = req.body.sellerPANCardNumber;
+      foundUser.GSTNumber = req.body.sellerGSTNumber;
+      foundUser.TandC = true;
+
+      foundUser.save();
+    });
+    // const newSeller = new SellerUser({
+    //   userName: user.username,
+    // });
+    // newSeller.save();
   });
 
   const data = "OK";
@@ -176,12 +193,13 @@ app.post("/user-details", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      console.log(user);
+      // console.log(user);
       User.findOne({ userEmail: user.useremail }, (err, foundUser) => {
         if (err) {
           console.log(err);
         } else {
-          console.log(foundUser.userName);
+          // console.log(foundUser);
+          // console.log(foundUser.userName);
           res.json({ foundUser });
         }
       });
@@ -219,11 +237,10 @@ app.post("/update-profile", (req, res) => {
     }
   });
 
-  // console.log("Status " + ans);
   res.json({ ans });
 });
 
-// Product Releated Routes
+// Product Related Routes
 
 app.post("/get-all-products", (req, res) => {
   Product.find({}, (err, foundProducts) => {
@@ -287,32 +304,29 @@ app.post("/get-products", (req, res) => {
   }
 });
 
-app.post("/get-product-with-id", async (req, res) => {
-  const authToken = req.body.authToken;
-
-  jwt.verify(authToken, process.env.AUTH_TOKEN, (err, foundUser) => {
-    if (err) {
-      console.log(err);
-    }
-
-    User.findOne({ userEmail: foundUser.useremail }, (err, user) => {
-      if (err) {
-        console.log(err);
-      }
-
-      const x = user;
-      x.recentsProducts.push(req.body.productID);
-      x.save();
-    });
-  });
+app.post("/get-product-with-id", (req, res) => {
+  // const authToken = req.body.authToken;
+  // console.log(authToken);
+  // jwt.verify(authToken, process.env.AUTH_TOKEN, (err, foundUser) => {
+  //   if (err) {
+  //     console.log(err);
+  //   }
+  //   User.findOne({ userEmail: foundUser.useremail }, (err, user) => {
+  //     if (err) {
+  //       console.log(err);
+  //     }
+  //     const x = user;
+  //     x.recentsProducts.push(req.body.productID);
+  //     console.log(req.body.productID);
+  //     x.save();
+  //   });
+  // });
 
   // console.log(req.body.productID);
   Product.findOne({ _id: req.body.productID }, (err, foundProduct) => {
     if (err) {
       console.log(err);
     }
-
-    // console.log(foundProduct);
 
     res.json({ foundProduct });
   });
