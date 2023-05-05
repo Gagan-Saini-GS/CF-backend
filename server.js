@@ -188,18 +188,14 @@ app.post("/become-seller", (req, res) => {
 
 app.post("/user-details", (req, res) => {
   const authToken = req.body.authToken;
-  // console.log(authToken);
   jwt.verify(authToken, process.env.AUTH_TOKEN, function (err, user) {
     if (err) {
       console.log(err);
     } else {
-      // console.log(user);
       User.findOne({ userEmail: user.useremail }, (err, foundUser) => {
         if (err) {
           console.log(err);
         } else {
-          // console.log(foundUser);
-          // console.log(foundUser.userName);
           res.json({ foundUser });
         }
       });
@@ -207,7 +203,7 @@ app.post("/user-details", (req, res) => {
   });
 });
 
-app.post("/update-profile", (req, res) => {
+app.patch("/update-profile", (req, res) => {
   const user = req.body.user;
   const authToken = req.body.authToken;
 
@@ -215,15 +211,11 @@ app.post("/update-profile", (req, res) => {
 
   jwt.verify(authToken, process.env.AUTH_TOKEN, (err, foundUser) => {
     if (!err) {
-      // console.log("Found User");
-      // console.log(foundUser);
       User.findOne({ userEmail: foundUser.useremail }, (err, finalUser) => {
         if (err) {
           console.log(err);
           ans = "ERROR";
         } else {
-          // console.log("Final User");
-          // console.log(finalUser);
           const x = finalUser;
 
           x.userProfileImg = user.userProfileImg;
