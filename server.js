@@ -39,29 +39,20 @@ const userSchema = new mongoose.Schema({
   TandC: Boolean,
 });
 
-const sellerSchema = new mongoose.Schema({
-  userName: String,
-  userEmail: String,
-  phoneNumber: Number,
-  PANCardNumber: String,
-  GSTNumber: String,
-  TandC: Boolean,
-});
-
 const productSchema = new mongoose.Schema({
   name: String,
   price: Number,
   category: String,
   company: String,
-  productImg: String,
+  gender: String,
   description: String,
+  productImg: [],
   reviews: [],
   questions: [],
   sizes: [],
 });
 
 const User = new mongoose.model("user", userSchema);
-const SellerUser = new mongoose.model("selleruser", sellerSchema);
 const Product = new mongoose.model("product", productSchema);
 
 const companies = ["nike", "adidas", "gucci", "puma", "louisvuitton"];
@@ -93,17 +84,16 @@ app.post("/signup", (req, res) => {
         phoneNumber: "",
         address: "",
         website: "",
+        cart: [],
         orders: [],
+        recentsProducts: [],
+        isSeller: false,
+        PANCardNumber: "",
+        GSTNumber: "",
+        TandC: true,
       });
 
       newUser.save();
-
-      // const user = {
-      //   username: req.body.user.username,
-      //   useremail: req.body.user.useremail,
-      // };
-      // console.log(user);
-
       const authToken = jwt.sign(
         {
           username: req.body.user.username,
@@ -112,15 +102,6 @@ app.post("/signup", (req, res) => {
         },
         process.env.AUTH_TOKEN
       );
-
-      // jwt.verify(authToken, process.env.AUTH_TOKEN, (err, founduser) => {
-      //   if (err) {
-      //     console.log(err);
-      //   } else {
-      //     console.log(founduser);
-      //   }
-      // });
-
       res.json({ authToken: authToken });
     }
   });
@@ -196,6 +177,7 @@ app.post("/user-details", (req, res) => {
         if (err) {
           console.log(err);
         } else {
+          // console.log(foundUser);
           res.json({ foundUser });
         }
       });
@@ -297,24 +279,6 @@ app.post("/get-products", (req, res) => {
 });
 
 app.post("/get-product-with-id", (req, res) => {
-  // const authToken = req.body.authToken;
-  // console.log(authToken);
-  // jwt.verify(authToken, process.env.AUTH_TOKEN, (err, foundUser) => {
-  //   if (err) {
-  //     console.log(err);
-  //   }
-  //   User.findOne({ userEmail: foundUser.useremail }, (err, user) => {
-  //     if (err) {
-  //       console.log(err);
-  //     }
-  //     const x = user;
-  //     x.recentsProducts.push(req.body.productID);
-  //     console.log(req.body.productID);
-  //     x.save();
-  //   });
-  // });
-
-  // console.log(req.body.productID);
   Product.findOne({ _id: req.body.productID }, (err, foundProduct) => {
     if (err) {
       console.log(err);
@@ -594,6 +558,47 @@ app.post("/buy-product", (req, res) => {
         };
 
         res.json({ x, y });
+      });
+    });
+  });
+});
+
+app.post("/checkout-product", (req, res) => {
+  const authToken = req.body.authToken;
+  const productID = req.body.productID;
+
+  jwt.verify(authToken, process.env.AUTH_TOKEN, (err, founduser) => {
+    if (err) {
+      console.log(err);
+    }
+
+    User.findOne({ userEmail: founduser.useremail }, (err, user) => {
+      if (err) {
+        console.log(err);
+      }
+      // console.log(user);
+      // const x = {
+      //   name: user.userName,
+      //   email: user.userEmail,
+      //   phoneNumber: user.phoneNumber,
+      //   address: user.address,
+      // };
+
+      Product.findOne({ _id: productID }, (err, product) => {
+        if (err) {
+          console.log(err);
+        }
+
+        const x = user;
+        x.orders.push(product);
+        x.save();
+        // const y = {
+        //   productImg: product.productImg,
+        //   name: product.name,
+        //   price: product.price,
+        // };
+        // res.json({ x, y });
+        res.json("OK");
       });
     });
   });
