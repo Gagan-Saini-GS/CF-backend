@@ -19,7 +19,16 @@ app.use(
   })
 );
 
-mongoose.connect("mongodb://localhost:27017/ClosetFashionDB");
+const DBURL = process.env.DBURL;
+mongoose
+  .connect(DBURL)
+  .then(() => {
+    console.log("Connected Successfully");
+  })
+  .catch((err) => {
+    console.log("Not connected to database");
+  });
+// mongoose.connect("mongodb://localhost:27017/ClosetFashionDB");
 
 const userSchema = new mongoose.Schema({
   userID: String,
