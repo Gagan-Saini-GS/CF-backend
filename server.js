@@ -23,7 +23,7 @@ const DBURL = process.env.DBURL;
 mongoose
   .connect(DBURL)
   .then(() => {
-    console.log("Connected Successfully");
+    console.log("Database Connected Successfully");
   })
   .catch((err) => {
     console.log("Not connected to database");
