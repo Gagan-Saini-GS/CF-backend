@@ -26,6 +26,7 @@ mongoose
     console.log("Database Connected Successfully");
   })
   .catch((err) => {
+    console.log(err);
     console.log("Not connected to database");
   });
 // mongoose.connect("mongodb://localhost:27017/ClosetFashionDB");
