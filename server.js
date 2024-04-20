@@ -2,11 +2,20 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { connectDB } = require("./config/db-config");
+const User = require("./models/Users");
+const Product = require("./models/Products");
+const { createUser } = require("./controllers/userControls/signup");
+const { loginUser } = require("./controllers/userControls/login");
+const { getUserDetails } = require("./controllers/userControls/user-details");
+const {
+  updateUserProfile,
+} = require("./controllers/userControls/update-profile");
+const { becomeSeller } = require("./controllers/userControls/become-seller");
+
 const port = 5000;
-const saltRounds = 10;
 
 const app = express();
 app.use(cors());
@@ -19,51 +28,8 @@ app.use(
   })
 );
 
-const DBURL = process.env.DBURL;
-mongoose
-  .connect(DBURL)
-  .then(() => {
-    console.log("Database Connected Successfully");
-  })
-  .catch((err) => {
-    console.log(err);
-    console.log("Not connected to database");
-  });
-// mongoose.connect("mongodb://localhost:27017/ClosetFashionDB");
-
-const userSchema = new mongoose.Schema({
-  userID: String,
-  userName: String,
-  userEmail: String,
-  userProfileImg: String,
-  password: String,
-  phoneNumber: String,
-  address: String,
-  website: String,
-  cart: [],
-  orders: [],
-  recentsProducts: [],
-  isSeller: Boolean,
-  PANCardNumber: String,
-  GSTNumber: String,
-  TandC: Boolean,
-});
-
-const productSchema = new mongoose.Schema({
-  name: String,
-  price: Number,
-  category: String,
-  company: String,
-  gender: String,
-  description: String,
-  productImg: [],
-  reviews: [],
-  questions: [],
-  sizes: [],
-});
-
-const User = new mongoose.model("user", userSchema);
-const Product = new mongoose.model("product", productSchema);
+// Connecting Database by calling connectDB function
+connectDB();
 
 const companies = ["nike", "adidas", "gucci", "puma", "louisvuitton"];
 const prices = ["799", "1299", "1899", "2399", "3099"];
@@ -81,148 +47,11 @@ const categories = [
 
 // User Related Routes
 
-app.post("/signup", (req, res) => {
-  bcrypt.hash(req.body.user.password, saltRounds, (err, hash) => {
-    if (err) {
-      console.log(err);
-    } else {
-      const newUser = new User({
-        userName: req.body.user.username,
-        userEmail: req.body.user.useremail,
-        userProfileImg: "",
-        password: hash,
-        phoneNumber: "",
-        address: "",
-        website: "",
-        cart: [],
-        orders: [],
-        recentsProducts: [],
-        isSeller: false,
-        PANCardNumber: "",
-        GSTNumber: "",
-        TandC: true,
-      });
-
-      newUser.save();
-      const authToken = jwt.sign(
-        {
-          username: req.body.user.username,
-          useremail: req.body.user.useremail,
-          password: hash,
-        },
-        process.env.AUTH_TOKEN
-      );
-      res.json({ authToken: authToken });
-    }
-  });
-});
-
-app.post("/login", (req, res) => {
-  User.findOne({ userEmail: req.body.user.useremail }, (err, foundUser) => {
-    if (err) {
-      console.log(err);
-    } else {
-      bcrypt.compare(
-        req.body.user.password,
-        foundUser.password,
-        (err, result) => {
-          if (!err && result === true) {
-            const authToken = jwt.sign(
-              {
-                useremail: req.body.user.useremail,
-                password: foundUser.password,
-              },
-              process.env.AUTH_TOKEN
-            );
-            res.json({ authToken: authToken });
-          }
-        }
-      );
-    }
-  });
-});
-
-app.post("/become-seller", (req, res) => {
-  const authToken = req.body.authToken;
-
-  jwt.verify(authToken, process.env.AUTH_TOKEN, function (err, user) {
-    if (err) {
-      console.log(err);
-      res.status(403);
-    }
-
-    User.findOne({ userEmail: user.useremail }, (err, finalUser) => {
-      if (err) {
-        console.log(err);
-        res.status(403);
-      }
-
-      const foundUser = finalUser;
-      foundUser.isSeller = true;
-      // foundUser.userEmail = req.body.sellerEmail;
-      // foundUser.phoneNumber = req.body.sellerPhoneNumber;
-      foundUser.PANCardNumber = req.body.sellerPANCardNumber;
-      foundUser.GSTNumber = req.body.sellerGSTNumber;
-      foundUser.TandC = true;
-
-      foundUser.save();
-    });
-    // const newSeller = new SellerUser({
-    //   userName: user.username,
-    // });
-    // newSeller.save();
-  });
-
-  const data = "OK";
-  res.json({ data });
-});
-
-app.post("/user-details", (req, res) => {
-  const authToken = req.body.authToken;
-  jwt.verify(authToken, process.env.AUTH_TOKEN, function (err, user) {
-    if (err) {
-      console.log(err);
-    } else {
-      User.findOne({ userEmail: user.useremail }, (err, foundUser) => {
-        if (err) {
-          console.log(err);
-        } else {
-          // console.log(foundUser);
-          res.json({ foundUser });
-        }
-      });
-    }
-  });
-});
-
-app.patch("/update-profile", (req, res) => {
-  const user = req.body.user;
-  const authToken = req.body.authToken;
-
-  let ans;
-
-  jwt.verify(authToken, process.env.AUTH_TOKEN, (err, foundUser) => {
-    if (!err) {
-      User.findOne({ userEmail: foundUser.useremail }, (err, finalUser) => {
-        if (err) {
-          console.log(err);
-          ans = "ERROR";
-        } else {
-          const x = finalUser;
-
-          x.userProfileImg = user.userProfileImg;
-          x.phoneNumber = user.phonenumber;
-          x.address = user.address;
-          x.website = user.website;
-          x.save();
-          ans = "DONE";
-        }
-      });
-    }
-  });
-
-  res.json({ ans });
-});
+app.post("/signup", createUser);
+app.post("/login", loginUser);
+app.post("/user-details", getUserDetails);
+app.patch("/update-profile", updateUserProfile);
+app.post("/become-seller", becomeSeller);
 
 // Product Related Routes
 
