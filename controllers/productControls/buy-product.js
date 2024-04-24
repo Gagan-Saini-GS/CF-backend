@@ -33,6 +33,7 @@ const buyProduct = async (req, res) => {
         productImg: await foundProduct.productImg,
         name: await foundProduct.name,
         price: await foundProduct.price,
+        description: await foundProduct.description,
       };
 
       res.json({ userDetails, productDetails });
