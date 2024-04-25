@@ -7,20 +7,13 @@ const createUser = async (req, res) => {
   try {
     const { username, useremail, password } = req.body.user;
 
-    // Validate user input
-    if (!username || !useremail || !password) {
-      return res
-        .status(400)
-        .json({ error: "Username, email, and password are required." });
-    }
-
     // Hash password
-    const hash = await bcrypt.hash(password, saltRounds);
+    const hash = await bcrypt.hash(password.value, saltRounds);
 
     // Create a new user
     const newUser = new User({
-      userName: username,
-      userEmail: useremail,
+      userName: username.value,
+      userEmail: useremail.value,
       userProfileImg: "",
       password: hash,
       phoneNumber: "",
@@ -41,8 +34,8 @@ const createUser = async (req, res) => {
     // Generate authentication token
     const authToken = jwt.sign(
       {
-        username,
-        useremail,
+        username: username.value,
+        useremail: useremail.value,
         password: hash,
       },
       process.env.AUTH_TOKEN
