@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const askProductQuestion = async (req, res) => {
   try {
-    const { productID, question, answer, authToken } = req.body;
+    const { productID, question, authToken } = req.body;
     jwt.verify(authToken, process.env.AUTH_TOKEN, async (err, user) => {
       if (err) {
         return res.status(401).json({ message: "Invalid auth token." });
@@ -17,7 +17,6 @@ const askProductQuestion = async (req, res) => {
       const arr = await foundProduct.questions;
       await arr.push({
         question: question,
-        answer: answer,
         username: user.username,
       });
 
