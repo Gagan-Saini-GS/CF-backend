@@ -5,7 +5,7 @@ const getAllProducts = async (req, res) => {
     const allProducts = await Product.find();
 
     const products = await allProducts.map((product) => ({
-      id: product._id,
+      _id: product._id,
       name: product.name,
       price: product.price,
       productImg: product.productImg,
