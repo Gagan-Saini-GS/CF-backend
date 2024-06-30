@@ -17,7 +17,7 @@ const askProductQuestion = async (req, res) => {
       const arr = await foundProduct.questions;
       await arr.push({
         question: question,
-        username: user.username,
+        name: user.name,
       });
 
       await foundProduct.save();

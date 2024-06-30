@@ -5,16 +5,16 @@ const saltRounds = 8;
 
 const createUser = async (req, res) => {
   try {
-    const { username, useremail, password } = req.body.user;
+    const { name, email, password } = req.body.user;
 
     // Hash password
-    const hash = await bcrypt.hash(password.value, saltRounds);
+    const hash = await bcrypt.hash(password, saltRounds);
 
     // Create a new user
     const newUser = new User({
-      userName: username.value,
-      userEmail: useremail.value,
-      userProfileImg: "",
+      name: name,
+      email: email,
+      profileImage: "",
       password: hash,
       phoneNumber: "",
       address: "",
@@ -34,8 +34,9 @@ const createUser = async (req, res) => {
     // Generate authentication token
     const authToken = jwt.sign(
       {
-        username: username.value,
-        useremail: useremail.value,
+        id: newUser._id,
+        name: name,
+        email: email,
         password: hash,
       },
       process.env.AUTH_TOKEN

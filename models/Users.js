@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
   userID: String,
-  userName: String,
-  userEmail: String,
-  userProfileImg: String,
+  name: String,
+  email: String,
+  profileImage: String,
   password: String,
   phoneNumber: String,
   address: String,
@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   orders: [],
   recentsProducts: [],
   isSeller: Boolean,
+  sellerEmail: String,
   PANCardNumber: String,
   GSTNumber: String,
   TandC: Boolean,

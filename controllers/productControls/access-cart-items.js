@@ -13,7 +13,7 @@ const accessCartItems = async (req, res) => {
 
         // Because I can't getting the full user from authToken so I have to find it.
 
-        const foundUser = await User.findOne({ userEmail: user.useremail });
+        const foundUser = await User.findOne({ email: user.email });
         if (!foundUser) {
           res.status(404).json({ error: "User not found" });
           return;
@@ -22,10 +22,18 @@ const accessCartItems = async (req, res) => {
         const userCart = await foundUser.cart;
 
         for (let i = 0; i < userCart.length; i++) {
-          const product = await Product.findOne({ _id: userCart[i] });
-          products.push(product);
+          const product = await Product.findById({ _id: userCart[i] });
+          products.push({
+            _id: product._id,
+            name: product.name,
+            price: product.price,
+            productImages: product.productImages,
+            brand: product.brand,
+            category: product.category,
+            quantity: 1,
+          });
         }
-        res.json({ products });
+        await res.json({ products });
       }
     );
   } catch (error) {

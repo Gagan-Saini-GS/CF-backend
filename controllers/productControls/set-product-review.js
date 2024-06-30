@@ -19,7 +19,7 @@ const setProductReview = async (req, res) => {
       await arr.push({
         reviewContent: reviewContent,
         starCount: starCount,
-        username: user.username,
+        name: user.name,
       });
 
       await foundProduct.save();

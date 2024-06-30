@@ -4,10 +4,10 @@ const jwt = require("jsonwebtoken");
 
 const loginUser = async (req, res) => {
   try {
-    const { useremail, password } = req.body.user;
+    const { email, password } = req.body.user;
 
     // Find user by email
-    const foundUser = await User.findOne({ userEmail: useremail.value });
+    const foundUser = await User.findOne({ email: email.value });
 
     // Check if user exists
     if (!foundUser) {
@@ -24,7 +24,7 @@ const loginUser = async (req, res) => {
     if (passwordsMatch) {
       const authToken = jwt.sign(
         {
-          useremail: useremail.value,
+          email: email.value,
           password: foundUser.password,
         },
         process.env.AUTH_TOKEN

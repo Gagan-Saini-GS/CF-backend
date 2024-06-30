@@ -3,14 +3,20 @@ const mongoose = require("mongoose");
 const productSchema = new mongoose.Schema({
   name: String,
   price: Number,
-  category: String,
-  company: String,
+  brand: String,
   gender: String,
+  category: String,
+  materials: String,
   description: String,
-  productImg: [],
+  sizes: [],
+  colors: [],
+  productImages: [],
   reviews: [],
   questions: [],
-  sizes: [],
+  seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
 const Product = new mongoose.model("product", productSchema);

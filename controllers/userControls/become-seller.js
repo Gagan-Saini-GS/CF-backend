@@ -11,7 +11,7 @@ const becomeSeller = async (req, res) => {
         res.status(403);
       }
 
-      User.findOne({ userEmail: user.useremail }, (err, finalUser) => {
+      User.findOne({ email: user.email }, (err, finalUser) => {
         if (err) {
           console.log(err);
           res.status(403);

@@ -4,13 +4,13 @@ const jwt = require("jsonwebtoken");
 
 const removeItem = async (req, res) => {
   try {
-    const productID = req.body.productID;
+    const productID = req.body.productId;
     const authToken = req.body.authToken;
 
     jwt.verify(authToken, process.env.AUTH_TOKEN, async (err, user) => {
       if (err) console.log(err);
       // Because I can't getting the full user from authToken so I have to find it.
-      const foundUser = await User.findOne({ userEmail: user.useremail });
+      const foundUser = await User.findOne({ email: user.email });
       if (!foundUser) {
         res.status(404).json({ error: "User not found" });
         return;

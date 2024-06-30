@@ -8,7 +8,9 @@ const getAllProducts = async (req, res) => {
       _id: product._id,
       name: product.name,
       price: product.price,
-      productImg: product.productImg,
+      brand: product.brand,
+      category: product.category,
+      productImages: product.productImages,
     }));
 
     res.status(200).json(products);

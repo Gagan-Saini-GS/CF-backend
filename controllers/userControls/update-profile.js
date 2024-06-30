@@ -8,7 +8,7 @@ const updateUserProfile = async (req, res) => {
 
     // Verify authentication token
     const decodedToken = jwt.verify(authToken, process.env.AUTH_TOKEN);
-    const foundUser = await User.findOne({ userEmail: decodedToken.useremail });
+    const foundUser = await User.findOne({ email: decodedToken.email });
 
     // If user not found, return error
     if (!foundUser) {
@@ -16,7 +16,9 @@ const updateUserProfile = async (req, res) => {
     }
 
     // Update user profile
-    foundUser.userProfileImg = user.userProfileImg || foundUser.userProfileImg;
+    foundUser.name = user.name || foundUser.name;
+    foundUser.email = user.email || foundUser.email;
+    foundUser.profileImage = user.profileImage || foundUser.profileImage;
     foundUser.phoneNumber = user.phoneNumber || foundUser.phoneNumber;
     foundUser.address = user.address || foundUser.address;
     foundUser.website = user.website || foundUser.website;
@@ -25,7 +27,11 @@ const updateUserProfile = async (req, res) => {
     await foundUser.save();
 
     // Send response
-    res.json({ status: 200 });
+    res.json({
+      status: 200,
+      message: "Profile updated successfully.",
+      data: foundUser,
+    });
   } catch (error) {
     console.error("Error in updating profile:", error);
     res.status(500).json({ error: "An internal server error occurred." });

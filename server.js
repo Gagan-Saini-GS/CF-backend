@@ -83,7 +83,7 @@ app.post("/search-product", searchProduct);
 
 // Test more
 // Working But taking too much time to load (need to refresh)
-app.post("/remove-item", removeItem);
+app.post("/remove-from-cart", removeItem);
 
 app.listen(port, () => {
   console.log("Server is running at port 5000");

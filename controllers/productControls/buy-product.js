@@ -10,15 +10,15 @@ const buyProduct = async (req, res) => {
     jwt.verify(authToken, process.env.AUTH_TOKEN, async (err, authUser) => {
       if (err) console.log(err);
 
-      const foundUser = await User.findOne({ userEmail: authUser.useremail });
+      const foundUser = await User.findOne({ email: authUser.email });
       if (!foundUser) {
         res.status(404).json({ error: "User not found" });
         return;
       }
 
       const userDetails = {
-        name: await foundUser.userName,
-        email: await foundUser.userEmail,
+        name: await foundUser.name,
+        email: await foundUser.email,
         phoneNumber: await foundUser.phoneNumber,
         address: await foundUser.address,
       };
@@ -30,10 +30,15 @@ const buyProduct = async (req, res) => {
       }
 
       const productDetails = {
-        productImg: await foundProduct.productImg,
+        productImages: await foundProduct.productImages,
         name: await foundProduct.name,
         price: await foundProduct.price,
         description: await foundProduct.description,
+        sizes: await foundProduct.sizes,
+        colors: await foundProduct.colors,
+        category: await foundProduct.category,
+        brand: await foundProduct.brand,
+        quantity: 1,
       };
 
       res.json({ userDetails, productDetails });

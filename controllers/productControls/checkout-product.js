@@ -18,7 +18,7 @@ const checkoutProduct = async (req, res) => {
         return;
       }
 
-      const foundUser = await User.findOne({ userEmail: authUser.useremail });
+      const foundUser = await User.findOne({ email: authUser.email });
       if (!foundUser) {
         res.status(404).json({ error: "User not found" });
         return;
