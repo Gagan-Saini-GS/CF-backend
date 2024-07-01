@@ -7,7 +7,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body.user;
 
     // Find user by email
-    const foundUser = await User.findOne({ email: email.value });
+    const foundUser = await User.findOne({ email: email });
 
     // Check if user exists
     if (!foundUser) {
@@ -15,16 +15,13 @@ const loginUser = async (req, res) => {
     }
 
     // Compare passwords
-    const passwordsMatch = await bcrypt.compare(
-      password.value,
-      foundUser.password
-    );
+    const passwordsMatch = await bcrypt.compare(password, foundUser.password);
 
     // If passwords match, generate authentication token
     if (passwordsMatch) {
       const authToken = jwt.sign(
         {
-          email: email.value,
+          email: email,
           password: foundUser.password,
         },
         process.env.AUTH_TOKEN

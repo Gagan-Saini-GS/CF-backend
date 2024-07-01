@@ -4,6 +4,11 @@ const jwt = require("jsonwebtoken");
 const getUserDetails = async (req, res) => {
   try {
     const authToken = req.body.authToken;
+    if (authToken === undefined || authToken === "" || authToken === null)
+      return res
+        .status(403)
+        .json({ userDetails: null, message: "User not logged-in" });
+
     jwt.verify(authToken, process.env.AUTH_TOKEN, async (err, user) => {
       if (err) {
         console.log(err);
