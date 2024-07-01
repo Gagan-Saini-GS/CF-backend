@@ -45,7 +45,6 @@ const {
 const port = 5000;
 
 const app = express();
-app.use(cors());
 
 // Use the cors middleware
 app.use(
