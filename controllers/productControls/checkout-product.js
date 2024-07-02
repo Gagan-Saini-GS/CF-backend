@@ -1,39 +1,11 @@
-const User = require("../../models/Users");
-const Product = require("../../models/Products");
-const jwt = require("jsonwebtoken");
-
 const checkoutProduct = async (req, res) => {
-  try {
-    const authToken = req.body.authToken;
-    const productID = req.body.productID;
+  const user = req.user;
+  const products = req.body.products;
 
-    jwt.verify(authToken, process.env.AUTH_TOKEN, async (err, authUser) => {
-      if (err) {
-        console.log(err);
-      }
+  user.orders = [...user.orders, ...products];
+  await user.save();
 
-      const foundProduct = await Product.findById(productID);
-      if (!foundProduct) {
-        res.status(404).json({ error: "Product not found" });
-        return;
-      }
-
-      const foundUser = await User.findOne({ email: authUser.email });
-      if (!foundUser) {
-        res.status(404).json({ error: "User not found" });
-        return;
-      }
-
-      const userOrders = await foundUser;
-      await userOrders.orders.push(foundProduct);
-      await userOrders.save();
-
-      res.json("Checkout successful");
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-    console.log(error);
-  }
+  res.status(200).json({ message: "Checkout successful" });
 };
 
 module.exports = { checkoutProduct };

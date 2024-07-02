@@ -11,7 +11,7 @@ const uploadProduct = async (req, res) => {
     const authToken = req.body.authToken;
 
     const decoded = jwt.verify(authToken, process.env.AUTH_TOKEN);
-    const sellerId = await decoded.id;
+    const sellerId = await decoded._id;
 
     // Check if the seller (user) exists
     const seller = await User.findById(sellerId);
@@ -27,8 +27,8 @@ const uploadProduct = async (req, res) => {
       category: productDetails.category.toLowerCase(),
       materials: productDetails.materials.toLowerCase(),
       description: productDetails.description,
-      sizes: productDetails.sizes.map((size) => size.name),
-      colors: productDetails.colors,
+      sizes: productDetails.sizes.map((size) => size.name.toLowerCase()),
+      colors: productDetails.colors.map((color) => color.color.toLowerCase()),
       productImages: productDetails.productImages,
       reviews: [],
       questions: [],

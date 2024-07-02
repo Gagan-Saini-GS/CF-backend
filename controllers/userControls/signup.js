@@ -34,7 +34,7 @@ const createUser = async (req, res) => {
     // Generate authentication token
     const authToken = jwt.sign(
       {
-        id: newUser._id,
+        _id: newUser._id,
         name: name,
         email: email,
         password: hash,

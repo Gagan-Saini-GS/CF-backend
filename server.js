@@ -41,6 +41,10 @@ const {
 const {
   searchProduct,
 } = require("./controllers/productControls/search-product");
+const authenticateJWT = require("./middleware/authenticateUser");
+const {
+  getOrderedProducts,
+} = require("./controllers/productControls/get-ordered-products");
 
 const port = 5000;
 
@@ -76,7 +80,7 @@ app.patch("/update-profile", updateUserProfile); // Need to Turn Off CORS for th
 app.post("/become-seller", becomeSeller);
 
 // Product Related Routes
-app.get("/get-all-products", getAllProducts);
+app.post("/get-all-products", getAllProducts);
 app.post("/get-product-with-id", getProductById);
 app.post("/ask-product-question", askProductQuestion);
 app.post("/set-product-review", setProductReview);
@@ -85,8 +89,9 @@ app.post("/access-cart-items", accessCartItems);
 app.post("/upload-product", uploadProduct);
 app.post("/filtered-products", filteredProducts);
 app.post("/buy-product", buyProduct);
-app.post("/checkout-product", checkoutProduct);
+app.post("/checkout-product", authenticateJWT, checkoutProduct);
 app.post("/search-product", searchProduct);
+app.post("/ordered-products", authenticateJWT, getOrderedProducts);
 // app.get("/get-product", getProduct); // No Need -> Not Calling from anywhere I think it's same as filteredProducts
 
 // Test more
