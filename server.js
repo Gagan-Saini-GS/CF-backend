@@ -76,7 +76,7 @@ connectDB();
 app.post("/signup", createUser);
 app.post("/login", loginUser);
 app.post("/user-details", getUserDetails);
-app.patch("/update-profile", updateUserProfile); // Need to Turn Off CORS for this (I don't why?)
+app.post("/update-profile", updateUserProfile); // Need to Turn Off CORS for this (I don't why?)
 app.post("/become-seller", becomeSeller);
 
 // Product Related Routes
