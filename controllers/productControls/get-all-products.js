@@ -2,6 +2,7 @@ const Product = require("../../models/Products");
 
 const getAllProducts = async (req, res) => {
   try {
+    const searchQuery = req.body.searchQuery;
     const selectedFilters = req.body.filters;
 
     const filters = {
@@ -56,6 +57,15 @@ const getAllProducts = async (req, res) => {
     // Apply color filter if provided
     if (filters.colors.length > 0) {
       query.colors = { $in: filters.colors };
+    }
+
+    // Apply search term filter if provided
+    if (searchQuery && searchQuery.trim()) {
+      query.$or = [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { description: { $regex: searchQuery, $options: "i" } },
+        { brand: { $regex: searchQuery, $options: "i" } },
+      ];
     }
 
     const allProducts = await Product.find(query);
