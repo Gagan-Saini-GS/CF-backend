@@ -2,8 +2,7 @@ const Product = require("../../models/Products");
 
 const getAllProducts = async (req, res) => {
   try {
-    const searchQuery = req.body.searchQuery;
-    const selectedFilters = req.body.filters;
+    const { filters: selectedFilters, searchQuery, page, limit } = req.body;
 
     const filters = {
       price: {
@@ -68,7 +67,14 @@ const getAllProducts = async (req, res) => {
       ];
     }
 
-    const allProducts = await Product.find(query);
+    // Calculate skip and limit for pagination
+    const offset = (page - 1) * limit;
+
+    // Find products with pagination
+    const allProducts = await Product.find(query).skip(offset).limit(limit);
+
+    // Get total count of products matching the query for pagination info
+    const totalProducts = await Product.countDocuments(query);
 
     const products = await allProducts.map((product) => ({
       _id: product._id,
@@ -79,7 +85,14 @@ const getAllProducts = async (req, res) => {
       productImages: product.productImages,
     }));
 
-    res.status(200).json(products);
+    // Send response with products and pagination info
+    res.status(200).json({
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
+      products,
+    });
+    // res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
