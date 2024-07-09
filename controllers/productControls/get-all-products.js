@@ -3,6 +3,7 @@ const Product = require("../../models/Products");
 const getAllProducts = async (req, res) => {
   try {
     const { filters: selectedFilters, searchQuery, page, limit } = req.body;
+    let filterExist = false;
 
     const filters = {
       price: {
@@ -36,26 +37,31 @@ const getAllProducts = async (req, res) => {
     // Apply brand filter if provided
     if (filters.brands.length > 0) {
       query.brand = { $in: filters.brands };
+      filterExist = true;
     }
 
     // Apply size filter if provided
     if (filters.sizes.length > 0) {
       query.sizes = { $in: filters.sizes };
+      filterExist = true;
     }
 
     // // Apply gender filter if provided
     if (filters.genders.length > 0) {
       query.gender = { $in: filters.genders };
+      filterExist = true;
     }
 
     // // Apply material filter if provided
     if (filters.materials.length > 0) {
       query.materials = { $in: filters.materials };
+      filterExist = true;
     }
 
     // Apply color filter if provided
     if (filters.colors.length > 0) {
       query.colors = { $in: filters.colors };
+      filterExist = true;
     }
 
     // Apply search term filter if provided
@@ -65,10 +71,11 @@ const getAllProducts = async (req, res) => {
         { description: { $regex: searchQuery, $options: "i" } },
         { brand: { $regex: searchQuery, $options: "i" } },
       ];
+      filterExist = true;
     }
 
-    // Calculate skip and limit for pagination
-    const offset = (page - 1) * limit;
+    // Calculate skip and limit for pagination, In filter product don't skip anything
+    const offset = filterExist ? 0 : (page - 1) * limit;
 
     // Find products with pagination
     const allProducts = await Product.find(query).skip(offset).limit(limit);
