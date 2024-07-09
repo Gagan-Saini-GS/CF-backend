@@ -37,7 +37,6 @@ const createUser = async (req, res) => {
         _id: newUser._id,
         name: name,
         email: email,
-        password: hash,
       },
       process.env.AUTH_TOKEN
     );

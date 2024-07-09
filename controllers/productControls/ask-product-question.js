@@ -1,28 +1,22 @@
 const Product = require("../../models/Products");
-const jwt = require("jsonwebtoken");
 
 const askProductQuestion = async (req, res) => {
   try {
-    const { productID, question, authToken } = req.body;
-    jwt.verify(authToken, process.env.AUTH_TOKEN, async (err, user) => {
-      if (err) {
-        return res.status(401).json({ message: "Invalid auth token." });
-      }
+    const { productID, question } = req.body;
 
-      const foundProduct = await Product.findById(productID);
-      if (!foundProduct) {
-        return res.status(404).json({ message: "Product not found." });
-      }
+    const foundProduct = await Product.findById(productID);
+    if (!foundProduct) {
+      return res.status(404).json({ message: "Product not found." });
+    }
 
-      const arr = await foundProduct.questions;
-      await arr.push({
-        question: question,
-        name: user.name,
-      });
-
-      await foundProduct.save();
-      res.json(foundProduct.questions);
+    const arr = await foundProduct.questions;
+    await arr.push({
+      question: question,
+      name: req.user.name,
     });
+
+    await foundProduct.save();
+    res.json(foundProduct.questions);
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log(error);

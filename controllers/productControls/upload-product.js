@@ -1,5 +1,4 @@
 const Product = require("../../models/Products");
-const jwt = require("jsonwebtoken");
 const User = require("../../models/Users");
 
 const uploadProduct = async (req, res) => {
@@ -8,10 +7,7 @@ const uploadProduct = async (req, res) => {
 
     // I am using authToken to keep which product is uploaded by which seller.
     // Helps to build admin panel and seller panel.
-    const authToken = req.body.authToken;
-
-    const decoded = jwt.verify(authToken, process.env.AUTH_TOKEN);
-    const sellerId = await decoded._id;
+    const sellerId = await req.user._id;
 
     // Check if the seller (user) exists
     const seller = await User.findById(sellerId);

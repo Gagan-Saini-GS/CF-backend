@@ -1,19 +1,7 @@
-const User = require("../../models/Users");
-const jwt = require("jsonwebtoken");
-
 const updateUserProfile = async (req, res) => {
   try {
+    const foundUser = req.user;
     const user = req.body.user;
-    const authToken = req.body.authToken;
-
-    // Verify authentication token
-    const decodedToken = jwt.verify(authToken, process.env.AUTH_TOKEN);
-    const foundUser = await User.findOne({ email: decodedToken.email });
-
-    // If user not found, return error
-    if (!foundUser) {
-      return res.status(404).json({ error: "User not found." });
-    }
 
     // Update user profile
     foundUser.name = user.name || foundUser.name;

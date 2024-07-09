@@ -13,7 +13,6 @@ const { becomeSeller } = require("./controllers/userControls/become-seller");
 const {
   getAllProducts,
 } = require("./controllers/productControls/get-all-products");
-const { getProduct } = require("./controllers/productControls/get-product");
 const {
   getProductById,
 } = require("./controllers/productControls/get-product-by-id");
@@ -26,9 +25,6 @@ const {
 const {
   setProductReview,
 } = require("./controllers/productControls/set-product-review");
-const {
-  filteredProducts,
-} = require("./controllers/productControls/filtered-products");
 const { addToCart } = require("./controllers/productControls/add-to-cart");
 const {
   accessCartItems,
@@ -70,33 +66,28 @@ app.use(
 // Connecting Database by calling connectDB function
 connectDB();
 
-// Tested
-
 // User Related Routes
 app.post("/signup", createUser);
 app.post("/login", loginUser);
-app.post("/user-details", getUserDetails);
-app.post("/update-profile", updateUserProfile); // Need to Turn Off CORS for this (I don't why?)
-app.post("/become-seller", becomeSeller);
 
 // Product Related Routes
+app.post("/search-product", searchProduct); // Not Working
 app.post("/get-all-products", getAllProducts);
-app.post("/get-product-with-id", getProductById);
-app.post("/ask-product-question", askProductQuestion);
-app.post("/set-product-review", setProductReview);
-app.post("/add-to-cart", addToCart);
-app.post("/access-cart-items", accessCartItems);
-app.post("/upload-product", uploadProduct);
-app.post("/filtered-products", filteredProducts);
-app.post("/buy-product", buyProduct);
-app.post("/checkout-product", authenticateJWT, checkoutProduct);
-app.post("/search-product", searchProduct);
-app.post("/ordered-products", authenticateJWT, getOrderedProducts);
-// app.get("/get-product", getProduct); // No Need -> Not Calling from anywhere I think it's same as filteredProducts
 
-// Test more
-// Working But taking too much time to load (need to refresh)
-app.post("/remove-from-cart", removeItem);
+// Autheticate JWT Routes
+app.post("/user-details", authenticateJWT, getUserDetails);
+app.post("/update-profile", authenticateJWT, updateUserProfile);
+app.post("/become-seller", authenticateJWT, becomeSeller);
+app.post("/get-product-with-id", authenticateJWT, getProductById);
+app.post("/add-to-cart", authenticateJWT, addToCart);
+app.post("/access-cart-items", authenticateJWT, accessCartItems);
+app.post("/upload-product", authenticateJWT, uploadProduct);
+app.post("/buy-product", authenticateJWT, buyProduct);
+app.post("/checkout-product", authenticateJWT, checkoutProduct);
+app.post("/ordered-products", authenticateJWT, getOrderedProducts);
+app.post("/remove-from-cart", authenticateJWT, removeItem);
+app.post("/ask-product-question", authenticateJWT, askProductQuestion);
+app.post("/set-product-review", authenticateJWT, setProductReview);
 
 app.listen(port, () => {
   console.log("Server is running at port 5000");

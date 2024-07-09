@@ -1,31 +1,13 @@
-const User = require("../../models/Users");
-const jwt = require("jsonwebtoken");
-
 const becomeSeller = async (req, res) => {
   try {
-    const authToken = req.body.authToken;
+    const foundUser = req.user;
 
-    jwt.verify(authToken, process.env.AUTH_TOKEN, (err, user) => {
-      if (err) {
-        console.log(err);
-        res.status(403);
-      }
+    foundUser.isSeller = true;
+    foundUser.PANCardNumber = req.body.sellerPANCardNumber;
+    foundUser.GSTNumber = req.body.sellerGSTNumber;
+    foundUser.TandC = true;
 
-      User.findOne({ email: user.email }, (err, finalUser) => {
-        if (err) {
-          console.log(err);
-          res.status(403);
-        }
-
-        const foundUser = finalUser;
-        foundUser.isSeller = true;
-        foundUser.PANCardNumber = req.body.sellerPANCardNumber;
-        foundUser.GSTNumber = req.body.sellerGSTNumber;
-        foundUser.TandC = true;
-
-        foundUser.save();
-      });
-    });
+    await foundUser.save();
 
     const data = "OK";
     res.json({ data });
