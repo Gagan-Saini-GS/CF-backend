@@ -2,7 +2,7 @@ const Product = require("../../models/Products");
 
 const getAllProducts = async (req, res) => {
   try {
-    const { filters: selectedFilters, searchQuery, page, limit } = req.body;
+    const { selectedFilters, searchQuery, page, limit } = req.body;
     let filterExist = false;
 
     const filters = {
