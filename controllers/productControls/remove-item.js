@@ -1,5 +1,3 @@
-const Product = require("../../models/Products");
-
 const removeItem = async (req, res) => {
   try {
     const productID = req.body.productId;
@@ -11,13 +9,7 @@ const removeItem = async (req, res) => {
     foundUser.cart = products;
     await foundUser.save();
 
-    const cartItems = products;
-
-    for (let i = 0; i < cartItems.length; i++) {
-      const product = await Product.findOne({ _id: cartItems[i] });
-      products.push(product);
-    }
-    res.json({ products });
+    await res.json({ message: "Item Removed" });
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log(error);
