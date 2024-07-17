@@ -3,6 +3,7 @@ const User = require("../../models/Users");
 
 const getProductById = async (req, res) => {
   try {
+    const includeAuthToken = req.body.includeAuthToken;
     const productID = req.body.productID;
     const foundProduct = await Product.findById(productID);
 
@@ -17,11 +18,13 @@ const getProductById = async (req, res) => {
     }
 
     let isProductAlreadyInCart = false;
-    const userCart = await req.user.cart;
-
-    if (userCart.includes(productID)) {
-      isProductAlreadyInCart = true;
+    if (includeAuthToken !== undefined && includeAuthToken) {
+      const userCart = await req.user.cart;
+      if (userCart.includes(productID)) {
+        isProductAlreadyInCart = true;
+      }
     }
+
     const sellerDetails = {
       name: seller.name,
       email: seller.email,
