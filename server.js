@@ -41,6 +41,10 @@ const authenticateJWT = require("./middleware/authenticateUser");
 const {
   getOrderedProducts,
 } = require("./controllers/productControls/get-ordered-products");
+const { updateAddress } = require("./controllers/userControls/update-address");
+const {
+  updatePhoneNumber,
+} = require("./controllers/userControls/update-phonenumber");
 
 const port = 5000;
 
@@ -77,6 +81,8 @@ app.post("/get-all-products", getAllProducts);
 // Autheticate JWT Routes
 app.post("/user-details", authenticateJWT, getUserDetails);
 app.post("/update-profile", authenticateJWT, updateUserProfile);
+app.post("/update-address", authenticateJWT, updateAddress);
+app.post("/update-phonenumber", authenticateJWT, updatePhoneNumber);
 app.post("/become-seller", authenticateJWT, becomeSeller);
 app.post("/get-product-with-id", authenticateJWT, getProductById);
 app.post("/add-to-cart", authenticateJWT, addToCart);
