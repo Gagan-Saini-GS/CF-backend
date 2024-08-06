@@ -45,6 +45,10 @@ const { updateAddress } = require("./controllers/userControls/update-address");
 const {
   updatePhoneNumber,
 } = require("./controllers/userControls/update-phonenumber");
+const {
+  deleteUserAccount,
+  deleteUserAndProducts,
+} = require("./controllers/userControls/delete-account");
 
 const port = 5000;
 
@@ -74,16 +78,20 @@ connectDB();
 app.post("/signup", createUser);
 app.post("/login", loginUser);
 
-// Product Related Routes
-app.post("/search-product", searchProduct); // Not Working
-app.post("/get-all-products", getAllProducts);
-
-// Autheticate JWT Routes
+// Autheticated User JWT Routes
 app.post("/user-details", authenticateJWT, getUserDetails);
 app.post("/update-profile", authenticateJWT, updateUserProfile);
 app.post("/update-address", authenticateJWT, updateAddress);
 app.post("/update-phonenumber", authenticateJWT, updatePhoneNumber);
 app.post("/become-seller", authenticateJWT, becomeSeller);
+// app.post("/delete-account", authenticateJWT, deleteUserAccount);
+app.post("/delete-account", authenticateJWT, deleteUserAndProducts);
+
+// Product Related Routes
+app.post("/search-product", searchProduct); // Not Working
+app.post("/get-all-products", getAllProducts);
+
+// Autheticated Products JWT Routes
 app.post("/get-product-with-id", authenticateJWT, getProductById);
 app.post("/add-to-cart", authenticateJWT, addToCart);
 app.post("/access-cart-items", authenticateJWT, accessCartItems);
@@ -96,5 +104,5 @@ app.post("/ask-product-question", authenticateJWT, askProductQuestion);
 app.post("/set-product-review", authenticateJWT, setProductReview);
 
 app.listen(port, () => {
-  console.log("Server is running at port 5000");
+  console.log(`Server is running at port ${port}`);
 });
