@@ -6,13 +6,13 @@ const authenticateJWT = async (req, res, next) => {
   const includeAuthToken = req.body.includeAuthToken;
   const authHeader = req.headers.authorization;
 
-  if (!authHeader && includeAuthToken !== undefined && includeAuthToken) {
-    return res.status(401).json({ message: "No auth token provided" });
-  }
-
   if (includeAuthToken !== undefined && !includeAuthToken) {
     next();
   } else {
+    if (!authHeader && includeAuthToken !== undefined && includeAuthToken) {
+      return res.status(401).json({ message: "No auth token provided" });
+    }
+
     const token = authHeader.split(" ")[1];
 
     try {
