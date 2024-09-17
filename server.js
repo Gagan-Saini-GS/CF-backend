@@ -49,6 +49,14 @@ const {
   deleteUserAccount,
   deleteUserAndProducts,
 } = require("./controllers/userControls/delete-account");
+const getSellerId = require("./controllers/sellerControls/get-seller-id");
+const {
+  getProductsBySeller,
+} = require("./controllers/sellerControls/get-products-by-seller");
+const { editProduct } = require("./controllers/sellerControls/edit-product");
+const {
+  deleteProduct,
+} = require("./controllers/sellerControls/delete-product");
 
 const port = 5000;
 
@@ -102,6 +110,12 @@ app.post("/ordered-products", authenticateJWT, getOrderedProducts);
 app.post("/remove-from-cart", authenticateJWT, removeItem);
 app.post("/ask-product-question", authenticateJWT, askProductQuestion);
 app.post("/set-product-review", authenticateJWT, setProductReview);
+
+// Seller JWT Routes
+app.get("/get-seller-id", authenticateJWT, getSellerId);
+app.get("/get-products-by-seller", authenticateJWT, getProductsBySeller);
+app.post("/edit-product", authenticateJWT, editProduct);
+app.delete("/delete-product", authenticateJWT, deleteProduct);
 
 app.listen(port, () => {
   console.log(`Server is running at port ${port}`);
