@@ -23,6 +23,7 @@ const uploadProduct = async (req, res) => {
       category: productDetails.category.toLowerCase(),
       materials: productDetails.materials.toLowerCase(),
       description: productDetails.description,
+      quantity: Number(productDetails.quantity),
       sizes: productDetails.sizes.map((size) => size.name.toLowerCase()),
       colors: productDetails.colors.map((color) => color.color.toLowerCase()),
       productImages: productDetails.productImages,

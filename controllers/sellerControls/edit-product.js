@@ -14,6 +14,7 @@ const editProduct = async (req, res) => {
     product.category = productDetails.category.toLowerCase();
     product.materials = productDetails.materials.toLowerCase();
     product.description = productDetails.description;
+    product.quantity = Number(productDetails.quantity);
     product.sizes = productDetails.sizes.map((size) => size.name.toLowerCase());
     product.colors = productDetails.colors.map((color) =>
       color.color.toLowerCase()
