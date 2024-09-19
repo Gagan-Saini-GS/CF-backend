@@ -9,9 +9,9 @@ const editProduct = async (req, res) => {
 
     product.name = productDetails.name;
     product.price = Number(productDetails.price);
-    product.brand = productDetails.brand.toLowerCase();
+    product.brand = productDetails.brand.value.toLowerCase();
     product.gender = productDetails.gender.toLowerCase();
-    product.category = productDetails.category.toLowerCase();
+    product.category = productDetails.category.value.toLowerCase();
     product.materials = productDetails.materials.toLowerCase();
     product.description = productDetails.description;
     product.quantity = Number(productDetails.quantity);
