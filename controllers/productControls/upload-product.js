@@ -18,9 +18,9 @@ const uploadProduct = async (req, res) => {
     const product = new Product({
       name: productDetails.name,
       price: Number(productDetails.price),
-      brand: productDetails.brand.toLowerCase(),
+      brand: productDetails.brand.value.toLowerCase(),
       gender: productDetails.gender.toLowerCase(),
-      category: productDetails.category.toLowerCase(),
+      category: productDetails.category.value.toLowerCase(),
       materials: productDetails.materials.toLowerCase(),
       description: productDetails.description,
       quantity: Number(productDetails.quantity),
